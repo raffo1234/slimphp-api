@@ -2,8 +2,6 @@
 
 // if(!defined("SPECIALCONSTANT")) die("Acceso denegado");
 
-define("ADMIN_URL", 'http://igospa.dhdinc.info/admin/');
-
 
 $app->get("/people/:lang", function($lang) use($app){
 
@@ -26,7 +24,7 @@ $app->get("/people/:lang", function($lang) use($app){
 		foreach($result as $item){
 			$images = explode(',', $item->images);
 			foreach($images as $n){
-				$item->images_arr[]['image'] = constant("ADMIN_URL") . 'images/people/' . $n;
+				$item->images_arr[]['image'] = constant("API_URL") . contant('UPLOADS_DIR') . 'people/' . $n;
 			}
 		};
 
@@ -64,7 +62,7 @@ $app->get("/people/:lang/:id", function($lang, $id) use($app){
 		foreach($result as $item){
 			$images = explode(',', $item->images);
 			foreach($images as $n){
-				$item->images_arr[]['image'] = constant("ADMIN_URL") .'images/people/' . $n;
+				$item->images_arr[]['image'] = constant("API_URL") . contant('UPLOADS_DIR') .'people/' . $n;
 			}
 		};
 

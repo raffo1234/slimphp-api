@@ -12,7 +12,7 @@ $app->get("/news/:lang", function($lang) use($app){
 		$language_code = $lang;
 		$params = $app->request()->params();
 
-		$rows = " n.id, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, nt.title, nt.excerpt ";
+		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, nt.title, nt.excerpt ";
 
 		$sort = '';
 		$limit = '';
@@ -28,8 +28,10 @@ $app->get("/news/:lang", function($lang) use($app){
 				$offset = $params['offset'];
 				$offset = $offset != '' && $offset > 0 ? ' OFFSET ' . $offset . ' ' : '';
 			}
-			if($params['fields'] != NULL){
-                		$rows = $params['fields'];
+			// var_dump(isset($params['fields']));
+			// return;
+			if(isset($params['fields']) != 0 && $params['fields'] != NULL){
+                $rows = $params['fields'];
 			}
 
 			if($params['sort'] != NULL){
@@ -49,7 +51,6 @@ $app->get("/news/:lang", function($lang) use($app){
 		FROM `new` n
         INNER JOIN `new_translation` nt ON n.id = nt.new_id
         WHERE nt.language_code = '". $language_code ."' " . $filter_by_year . " " . $sort . $limit . $offset;
-
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
@@ -101,6 +102,10 @@ $app->get("/news/:lang", function($lang) use($app){
 	            $result[$key]->date_yea = $year_arr[2];
 	        }
 
+		    foreach($result as $item){
+		    	$item->image = constant("API_URL") . $item->image;
+			};
+
 		// RESPONSE
 	    $response = $app->response();
 		$app->response->headers->set("Content-type", "application/json");
@@ -129,6 +134,10 @@ $app->get("/new/:lang/:id", function($lang, $id) use($app){
 		$dbh->execute();
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);
 
+		foreach($result as $item){
+	    	$item->image = constant("API_URL") . $item->image;
+		};
+
 		// RESPONSE
 	    $response = $app->response();
 		$app->response->headers->set("Content-type", "application/json");
@@ -154,7 +163,7 @@ $app->post("/new/:lang/:id", function($lang, $id) use($app){
 
 		$params = $app->request()->params();
 
-		$target_dir = 'uploads/';
+		$target_dir = constant('UPLOADS_DIR');
 		$dir_section = 'news/';
 		$ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 		$name = uniqid('img-'.date('Ymd').'-') . '.' . $ext;
