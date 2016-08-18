@@ -139,13 +139,12 @@ $app->get("/new/:lang/:id", function($lang, $id) use($app){
 	catch(PDOException $e){
 		echo "Error: " . $e->getnew();
 	}
-
 });
 
 
 
 
-
+// admin
 // edit
 $app->post("/new/:lang/:id", function($lang, $id) use($app){
 
@@ -155,9 +154,23 @@ $app->post("/new/:lang/:id", function($lang, $id) use($app){
 
 		$params = $app->request()->params();
 
+		$target_dir = 'uploads/';
+		$dir_section = 'news/';
+		$ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+		$name = uniqid('img-'.date('Ymd').'-') . '.' . $ext;
+		$target_file = $target_dir . $dir_section . $name;
+		$image_fullpath = '';
+
+		if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+			$image_fullpath = $target_file;
+		} else {
+		    $image_fullpath = '';
+		}
+
 		$query = "UPDATE `new` JOIN `new_translation`
 			ON 	`new`.`id` = `new_translation`.`new_id`
 		    SET `title` = :title,
+		       `image` = :image,
 		       `excerpt` = :excerpt,
 		       `date_created` = :date_created,
 		       `content` = :content
@@ -166,6 +179,7 @@ $app->post("/new/:lang/:id", function($lang, $id) use($app){
 
 		$dbh = $connection->prepare($query);
 		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);
+		$dbh->bindParam(':image', $image_fullpath, PDO::PARAM_STR);
 		$dbh->bindParam(':excerpt', $params['excerpt'], PDO::PARAM_STR);
 		$dbh->bindParam(':date_created', $params['date_created'], PDO::PARAM_STR);
 		$dbh->bindParam(':content', $params['content'], PDO::PARAM_STR);
