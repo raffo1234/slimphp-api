@@ -353,7 +353,7 @@ $app->post("/new", function() use($app){
 
 
 
-
+// admin
 // eliminar
 
 $app->post("/new_item/delete/:id", function($id) use($app){
@@ -362,15 +362,11 @@ $app->post("/new_item/delete/:id", function($id) use($app){
 
 		require 'connect.php';
 
-
-		$query = "UPDATE `new`
-		    SET `deleted`='1'
-
-		 WHERE `id` = " . $id;
+		$query = "DELETE FROM `new`
+		 		WHERE `id` = " . $id;
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
-
 
 		// RESPONSE
 	    $response = $app->response();
