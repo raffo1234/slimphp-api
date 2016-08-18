@@ -2,7 +2,7 @@
 
 // if(!defined("SPECIALCONSTANT")) die("Acceso denegado");
 
-define("ADMIN_URL", 'http://igospa.dhdinc.info/admin/');
+// define("ADMIN_URL", 'http://igospa.dhdinc.info/admin/');
 
 
 $app->get("/places/:lang", function($lang) use($app){

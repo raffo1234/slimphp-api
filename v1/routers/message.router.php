@@ -13,10 +13,11 @@ $app->get("/messages/:lang", function($lang) use($app){
 
 		$rows = " m.id, m.date_created, m.year, m.date as date_original, DATE_FORMAT(m.date, '%d-%m-%Y') as date, m.lastModified, m.deleted, mt.title, mt.excerpt ";
 		$sort = '';
+		$offset = '';
 		$limit = '';
 		$filter_by_year = '';
 
-		if(count($params) != 0){
+		if(count($params) !== 0){
 			if($params['limit'] != NULL){
 				$limit = $params['limit'];
 				$limit = $limit != '' && $limit > 0 ? ' LIMIT ' . $limit . ' ' : '';
@@ -28,7 +29,6 @@ $app->get("/messages/:lang", function($lang) use($app){
 			if($params['fields'] != NULL){
                 $rows = $params['fields'];
 			}
-
 			if($params['year'] != NULL){
                 $year = $params['year'];
 
@@ -104,9 +104,10 @@ $app->get("/messages/:lang", function($lang) use($app){
             $result[$key]->date_yea = $year_arr[2];
         }
 
-
+        // var_dump($params);
+        // return;
 		// for year field
-		if($params['fields'] != NULL && $params['fields'] == 'year'){
+		if(count($params) != 0 && $params['fields'] != NULL && $params['fields'] == 'year'){
 
 			foreach($result as $key => $value){
 				$result[$key] = $value->year;

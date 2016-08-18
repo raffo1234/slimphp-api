@@ -16,6 +16,7 @@ $app->get("/news/:lang", function($lang) use($app){
 
 		$sort = '';
 		$limit = '';
+		$offset = '';
 		$filter_by_year = '';
 
 		if(count($params) != 0){
