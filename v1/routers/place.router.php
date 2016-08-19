@@ -26,7 +26,7 @@ $app->get("/places/:lang", function($lang) use($app){
 		foreach($result as $item){
 			$images = explode(',', $item->images);
 			foreach($images as $n){
-				$item->images_arr[]['image'] = constant("API_URL") . contant('UPLOADS_DIR') .'places/'. $n;
+				$item->images_arr[]['image'] = constant("API_URL") . constant('UPLOADS_DIR') .'places/'. $n;
 			}
 		};
 
