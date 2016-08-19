@@ -18,18 +18,18 @@ $app->get("/messages/:lang", function($lang) use($app){
 		$filter_by_year = '';
 
 		if(count($params) !== 0){
-			if($params['limit'] != NULL){
+			if(isset($params['limit']) && $params['limit'] != NULL){
 				$limit = $params['limit'];
 				$limit = $limit != '' && $limit > 0 ? ' LIMIT ' . $limit . ' ' : '';
 			}
-			if($params['offset'] != NULL){
+			if(isset($params['offset']) && $params['offset'] != NULL){
 				$offset = $params['offset'];
 				$offset = $offset != '' && $offset > 0 ? ' OFFSET ' . $offset . ' ' : '';
 			}
-			if($params['fields'] != NULL){
+			if(isset($params['fields']) && $params['fields'] != NULL){
                 $rows = $params['fields'];
 			}
-			if($params['year'] != NULL){
+			if(isset($params['year']) && $params['year'] != NULL){
                 $year = $params['year'];
 
 				$filter_by_year = " AND year LIKE '%". $year ."%' ";
@@ -59,7 +59,27 @@ $app->get("/messages/:lang", function($lang) use($app){
 
 
         // set format date
-        foreach($result as $key => $value){
+
+        
+
+        // var_dump($params);
+        // return;
+		// for year field
+		if(isset($params['fields']) && count($params) != 0 && $params['fields'] != NULL && $params['fields'] == 'year'){
+
+			foreach($result as $key => $value){
+				$result[$key] = $value->year;
+			}
+
+			$result = array_values(array_unique($result));
+			$result_year = [];
+			foreach($result as $key => $value){
+				$result_year[]['year'] = $value;
+			}
+			$result = $result_year;
+		}else {
+			foreach($result as $key => $value){
+
             $year_arr = explode('-', $value->date);
             $result[$key]->date_day = $year_arr[0];
             switch ($year_arr[1]) {
@@ -103,22 +123,6 @@ $app->get("/messages/:lang", function($lang) use($app){
             $result[$key]->date_mon = $year_arr[1];
             $result[$key]->date_yea = $year_arr[2];
         }
-
-        // var_dump($params);
-        // return;
-		// for year field
-		if(count($params) != 0 && $params['fields'] != NULL && $params['fields'] == 'year'){
-
-			foreach($result as $key => $value){
-				$result[$key] = $value->year;
-			}
-
-			$result = array_values(array_unique($result));
-			$result_year = [];
-			foreach($result as $key => $value){
-				$result_year[]['year'] = $value;
-			}
-			$result = $result_year;
 		}
 
 

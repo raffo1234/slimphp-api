@@ -24,7 +24,7 @@ $app->get("/people/:lang", function($lang) use($app){
 		foreach($result as $item){
 			$images = explode(',', $item->images);
 			foreach($images as $n){
-				$item->images_arr[]['image'] = constant("API_URL") . contant('UPLOADS_DIR') . 'people/' . $n;
+				$item->images_arr[]['image'] = constant("API_URL") . constant('UPLOADS_DIR') . 'people/' . $n;
 			}
 		};
 
@@ -62,7 +62,7 @@ $app->get("/people/:lang/:id", function($lang, $id) use($app){
 		foreach($result as $item){
 			$images = explode(',', $item->images);
 			foreach($images as $n){
-				$item->images_arr[]['image'] = constant("API_URL") . contant('UPLOADS_DIR') .'people/' . $n;
+				$item->images_arr[]['image'] = constant("API_URL") . constant('UPLOADS_DIR') .'people/' . $n;
 			}
 		};
 

@@ -30,7 +30,7 @@ $app->get("/news/:lang", function($lang) use($app){
 			}
 			// var_dump(isset($params['fields']));
 			// return;
-			if(isset($params['fields']) != 0 && $params['fields'] != NULL){
+			if(isset($params['fields']) && $params['fields'] != NULL){
                 $rows = $params['fields'];
 			}
 
@@ -56,7 +56,7 @@ $app->get("/news/:lang", function($lang) use($app){
 		$dbh->execute();
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);
 
-		// set format date
+			// set format date
 	        foreach($result as $key => $value){
 	            $year_arr = explode('-', $value->date);
 	            $result[$key]->date_day = $year_arr[0];

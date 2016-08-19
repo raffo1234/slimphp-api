@@ -1,9 +1,9 @@
 <?php
 
 $app->get("/histories-all/", function() use($app){
-	
+
 	try{
-		
+
 		require 'connect.php';
 
 		$params = $app->request()->params();
@@ -14,11 +14,10 @@ $app->get("/histories-all/", function() use($app){
 		$modifiedSince = $params['modifiedSince'];
 		$modifiedSince = $modifiedSince != '' ? ' WHERE lastModified > "' . $modifiedSince . '" ' : '';
 		// $modifiedSince = WHERE lastModified > '2016-03-20 09:31:00';
-			
-			
+
 		$query = "SELECT *
 		FROM `history` " . $modifiedSince;
-        
+
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);

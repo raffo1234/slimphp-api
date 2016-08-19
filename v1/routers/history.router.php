@@ -174,20 +174,17 @@ $app->post("/history", function() use($app){
 // eliminar
 
 $app->post("/history_item/delete/:id", function($id) use($app){
-	
+
 	try{
-		
+
 		require 'connect.php';
 
-		
-		$query = "UPDATE `history`   
-		    SET `deleted`='1'
-		       
-		 WHERE `id` = " . $id; 
+		$query = "DELETE FROM `history`
+		 		WHERE `id` = " . $id;
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
-		
+
 
 		// RESPONSE
 	    $response = $app->response();
