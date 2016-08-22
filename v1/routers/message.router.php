@@ -60,7 +60,7 @@ $app->get("/messages/:lang", function($lang) use($app){
 
         // set format date
 
-        
+
 
         // var_dump($params);
         // return;
@@ -147,7 +147,7 @@ $app->get("/message/:lang/:id", function($lang, $id) use($app){
 		require 'connect.php';
 
 		$language_code = $lang;
-		$query = "SELECT m.*, DATE_FORMAT(m.date, '%d-%m-%Y') as date, mt.*
+		$query = "SELECT m.*, DATE_FORMAT(m.date, '%d-%m-%Y') as date, DATE_FORMAT(m.date, '%Y-%m-%d') as date_formatted, mt.*
         FROM `message` m
         INNER JOIN `message_translation` mt ON m.id = mt.message_id
         WHERE m.id = '". $id ."' AND mt.language_code = '". $language_code ."'";
@@ -270,7 +270,7 @@ $app->get("/message-traslation-id/:message_id", function($message_id) use($app){
 });
 
 
-
+// admin
 // edit
 $app->post("/message/:lang/:id", function($lang, $id) use($app){
 
@@ -285,14 +285,20 @@ $app->post("/message/:lang/:id", function($lang, $id) use($app){
 		    SET `title` = :title,
 		       `excerpt` = :excerpt,
 		       `year` = :year,
+		       `date` = :date_formatted,
 		       `content` = :content
 
 		 WHERE message_id = '". $id ."' AND language_code = '". $lang ."'";
 
+		 $year_arr = '';
+		 $year_arr = explode('-', $params['date_formatted']);
+		 $year = $year_arr[0];
+
 		$dbh = $connection->prepare($query);
 		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);
 		$dbh->bindParam(':excerpt', $params['excerpt'], PDO::PARAM_STR);
-		$dbh->bindParam(':year', $params['year'], PDO::PARAM_STR);
+		$dbh->bindParam(':year', $year, PDO::PARAM_STR);
+		$dbh->bindParam(':date_formatted', $params['date_formatted'], PDO::PARAM_STR);
 		$dbh->bindParam(':content', $params['content'], PDO::PARAM_STR);
 		$dbh->execute();
 
@@ -389,11 +395,8 @@ $app->post("/message_item/delete/:id", function($id) use($app){
 
 		require 'connect.php';
 
-
-		$query = "UPDATE `message`
-		    SET `deleted`='1'
-
-		 WHERE `id` = " . $id;
+		$query = "DELETE FROM `new`
+		 		WHERE `id` = " . $id;
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();

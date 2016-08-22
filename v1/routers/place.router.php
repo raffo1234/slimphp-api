@@ -84,24 +84,24 @@ $app->get("/place/:lang/:id", function($lang, $id) use($app){
 
 
 $app->post("/place/:lang/:id", function($lang, $id) use($app){
-	
+
 	try{
-		
+
 		require 'connect.php';
 
 		$params = $app->request()->params();
-		
-		$query = "UPDATE `place_translation`   
+
+		$query = "UPDATE `place_translation`
 		    SET `title` = :title,
 		       `content` = :content
-		       
-		 WHERE place_id = '". $id ."' AND language_code = '". $lang ."'"; 
+
+		 WHERE place_id = '". $id ."' AND language_code = '". $lang ."'";
 
 		$dbh = $connection->prepare($query);
-		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);       
+		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);
 		$dbh->bindParam(':content', $params['content'], PDO::PARAM_STR);
 		$dbh->execute();
-		
+
 
 		// RESPONSE
 	    $response = $app->response();

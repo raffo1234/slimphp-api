@@ -15,8 +15,9 @@ $app->get("/people/:lang", function($lang) use($app){
 		$query = "SELECT p.*, GROUP_CONCAT(pi.image) as images, pt.firstname, pt.lastname, pt.excerpt
         FROM `people` p
         INNER JOIN `people_translation` pt ON p.id = pt.people_id
-        INNER JOIN `people_image` pi ON p.id = pi.people_id
-        WHERE pt.language_code = '". $language_code ."' GROUP BY pi.people_id";
+        LEFT JOIN `people_image` pi ON p.id = pi.people_id
+        WHERE pt.language_code = '". $language_code ."' GROUP BY pi.people_id ORDER BY p.id ASC";
+
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);
@@ -122,7 +123,7 @@ $app->post("/people/:lang/:id", function($lang, $id) use($app){
 
 
 
-
+// admin
 // agregar - insert
 
 $app->post("/people", function() use($app){
@@ -187,7 +188,7 @@ $app->post("/people", function() use($app){
 
 
 
-
+// admin
 // eliminar
 
 $app->post("/people_item/delete/:id", function($id) use($app){
@@ -196,11 +197,8 @@ $app->post("/people_item/delete/:id", function($id) use($app){
 
 		require 'connect.php';
 
-
-		$query = "UPDATE `people`
-		    SET `deleted`='1'
-
-		 WHERE `id` = " . $id;
+		$query = "DELETE FROM `people`
+		 		WHERE `id` = " . $id;
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();

@@ -102,10 +102,6 @@ $app->get("/news/:lang", function($lang) use($app){
 	            $result[$key]->date_yea = $year_arr[2];
 	        }
 
-		    foreach($result as $item){
-		    	$item->image = constant("API_URL") . $item->image;
-			};
-
 		// RESPONSE
 	    $response = $app->response();
 		$app->response->headers->set("Content-type", "application/json");
@@ -126,17 +122,13 @@ $app->get("/new/:lang/:id", function($lang, $id) use($app){
 		require 'connect.php';
 
 		$language_code = $lang;
-		$query = "SELECT n.*, DATE_FORMAT(n.date, '%d-%m-%Y') as date, nt.*
+		$query = "SELECT n.*, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, DATE_FORMAT(n.date, '%Y-%m-%d') as date_formatted, nt.*
         FROM `new` n
         INNER JOIN `new_translation` nt ON n.id = nt.new_id
         WHERE n.id = '". $id ."' AND nt.language_code = '". $language_code ."'";
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);
-
-		foreach($result as $item){
-	    	$item->image = constant("API_URL") . $item->image;
-		};
 
 		// RESPONSE
 	    $response = $app->response();
@@ -165,22 +157,35 @@ $app->post("/new/:lang/:id", function($lang, $id) use($app){
 
 		$target_dir = constant('UPLOADS_DIR');
 		$dir_section = 'news/';
-		$ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-		$name = uniqid('img-'.date('Ymd').'-') . '.' . $ext;
-		$target_file = $target_dir . $dir_section . $name;
 		$image_fullpath = '';
 
-		if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-			$image_fullpath = $target_file;
-		} else {
-		    $image_fullpath = '';
+		if(isset($_FILES['image'])){
+			$ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+			$image_name = uniqid('img-'.date('Ymd').'-') . '.' . $ext;
+			$target_file = $target_dir . $dir_section . $image_name;
+			// print_r($_FILES);
+			// return;
+			if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+				$image = $image_name;
+			} else {
+			    if(isset($params['image'])){
+			    	$image = $params['image'];
+				}
+			}
+		}else{
+			if(isset($params['image'])){
+				$image = $params['image'];
+			}
 		}
 
+		// var_dump($params['date_formatted']);
+		// return;
 		$query = "UPDATE `new` JOIN `new_translation`
 			ON 	`new`.`id` = `new_translation`.`new_id`
 		    SET `title` = :title,
 		       `image` = :image,
 		       `excerpt` = :excerpt,
+		       `date` = :date_formatted,
 		       `date_created` = :date_created,
 		       `content` = :content
 
@@ -188,9 +193,10 @@ $app->post("/new/:lang/:id", function($lang, $id) use($app){
 
 		$dbh = $connection->prepare($query);
 		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);
-		$dbh->bindParam(':image', $image_fullpath, PDO::PARAM_STR);
+		$dbh->bindParam(':image', $image, PDO::PARAM_STR);
 		$dbh->bindParam(':excerpt', $params['excerpt'], PDO::PARAM_STR);
 		$dbh->bindParam(':date_created', $params['date_created'], PDO::PARAM_STR);
+		$dbh->bindParam(':date_formatted', $params['date_formatted'], PDO::PARAM_STR);
 		$dbh->bindParam(':content', $params['content'], PDO::PARAM_STR);
 		$dbh->execute();
 
