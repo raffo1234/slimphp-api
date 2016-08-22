@@ -13,7 +13,13 @@ require 'connect.php';
 // $app->add(new HttpBasicAuth('admin', 'admin'));
 
 define("UPLOADS_DIR", 'uploads/');
-define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/igospa/api/v1/");
+
+
+// production
+define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/api/v1/");
+
+// local
+// define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/igospa/api/v1/");
 
 $routers = glob('routers/*.router.php');
 foreach ($routers as $router) {
