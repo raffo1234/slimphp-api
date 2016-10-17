@@ -16,10 +16,10 @@ define("UPLOADS_DIR", 'uploads/');
 
 
 // production
-define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/api/v1/");
+// define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/api/v1/");
 
 // local
-// define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/igospa/api/v1/");
+define("API_URL", 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/igospa/api/v1/");
 
 $routers = glob('routers/*.router.php');
 foreach ($routers as $router) {
