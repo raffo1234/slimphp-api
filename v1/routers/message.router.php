@@ -283,6 +283,7 @@ $app->post("/message/:lang/:id", function($lang, $id) use($app){
 		$query = "UPDATE `message` JOIN `message_translation`
 			ON 	`message`.`id` = `message_translation`.`message_id`
 		    SET `title` = :title,
+						`urlweb` = :urlweb,
 		       `excerpt` = :excerpt,
 		       `year` = :year,
 		       `date` = :date_formatted,
@@ -296,6 +297,7 @@ $app->post("/message/:lang/:id", function($lang, $id) use($app){
 
 		$dbh = $connection->prepare($query);
 		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);
+		$dbh->bindParam(':urlweb', $params['urlweb'], PDO::PARAM_STR);
 		$dbh->bindParam(':excerpt', $params['excerpt'], PDO::PARAM_STR);
 		$dbh->bindParam(':year', $year, PDO::PARAM_STR);
 		$dbh->bindParam(':date_formatted', $params['date_formatted'], PDO::PARAM_STR);
@@ -414,4 +416,3 @@ $app->post("/message_item/delete/:id", function($id) use($app){
 	}
 
 });
-

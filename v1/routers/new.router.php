@@ -12,7 +12,7 @@ $app->get("/news/:lang", function($lang) use($app){
 		$language_code = $lang;
 		$params = $app->request()->params();
 
-		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, nt.title, nt.excerpt ";
+		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, n.published, nt.title, nt.excerpt  ";
 
 		$sort = '';
 		$limit = '';
@@ -50,7 +50,7 @@ $app->get("/news/:lang", function($lang) use($app){
 		$query = "SELECT $rows
 		FROM `new` n
         INNER JOIN `new_translation` nt ON n.id = nt.new_id
-        WHERE nt.language_code = '". $language_code ."' " . $filter_by_year . " " . $sort . $limit . $offset;
+        WHERE n.published = 1 AND nt.language_code = '". $language_code ."' " . $filter_by_year . " " . $sort . $limit . $offset;
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
@@ -131,7 +131,7 @@ $app->get("/new/:lang/:id", function($lang, $id) use($app){
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);
 
 		// RESPONSE
-	    $response = $app->response();
+	  $response = $app->response();
 		$app->response->headers->set("Content-type", "application/json");
 		$app->response->status(200);
 		$app->response->body(json_encode($result));
@@ -183,21 +183,25 @@ $app->post("/new/:lang/:id", function($lang, $id) use($app){
 		$query = "UPDATE `new` JOIN `new_translation`
 			ON 	`new`.`id` = `new_translation`.`new_id`
 		    SET `title` = :title,
+					 `urlweb` = :urlweb,
 		       `image` = :image,
 		       `excerpt` = :excerpt,
 		       `date` = :date_formatted,
 		       `date_created` = :date_created,
-		       `content` = :content
+		       `content` = :content,
+		       `published` = :published
 
 		 WHERE new_id = '". $id ."' AND language_code = '". $lang ."'";
 
 		$dbh = $connection->prepare($query);
 		$dbh->bindParam(':title', $params['title'], PDO::PARAM_STR);
+		$dbh->bindParam(':urlweb', $params['urlweb'], PDO::PARAM_STR);
 		$dbh->bindParam(':image', $image, PDO::PARAM_STR);
 		$dbh->bindParam(':excerpt', $params['excerpt'], PDO::PARAM_STR);
 		$dbh->bindParam(':date_created', $params['date_created'], PDO::PARAM_STR);
 		$dbh->bindParam(':date_formatted', $params['date_formatted'], PDO::PARAM_STR);
 		$dbh->bindParam(':content', $params['content'], PDO::PARAM_STR);
+		$dbh->bindParam(':published', $params['published'], PDO::PARAM_STR);
 		$dbh->execute();
 
 
