@@ -12,6 +12,13 @@ $app->get("/news/:lang", function($lang) use($app){
 		$language_code = $lang;
 		$params = $app->request()->params();
 
+		// is admin
+		$published = 1;
+		$to_admin = $params['to_admin'];
+		// var_dump($to_admin);
+		// die();
+		$published = ($to_admin === 1 ) ? '' : ' n.published = 1 AND ' ;
+
 		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, n.published, nt.title, nt.excerpt  ";
 
 		$sort = '';
@@ -50,7 +57,7 @@ $app->get("/news/:lang", function($lang) use($app){
 		$query = "SELECT $rows
 		FROM `new` n
         INNER JOIN `new_translation` nt ON n.id = nt.new_id
-        WHERE n.published = 1 AND nt.language_code = '". $language_code ."' " . $filter_by_year . " " . $sort . $limit . $offset;
+        WHERE $published nt.language_code = '". $language_code ."' " . $filter_by_year . " " . $sort . $limit . $offset;
 
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
@@ -103,6 +110,7 @@ $app->get("/news/:lang", function($lang) use($app){
 	        }
 
 		// RESPONSE
+
 	    $response = $app->response();
 		$app->response->headers->set("Content-type", "application/json");
 		$app->response->status(200);
