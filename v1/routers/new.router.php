@@ -17,7 +17,7 @@ $app->get("/news/:lang", function($lang) use($app){
 		$to_admin = $params['to_admin'];
 		// var_dump($to_admin);
 		// die();
-		$published = ($to_admin === 1 ) ? '' : ' n.published = 1 AND ' ;
+		$published = ($to_admin == "1" ) ? '' : ' n.published = 1 AND ' ;
 
 		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, n.published, nt.title, nt.excerpt  ";
 
@@ -59,6 +59,8 @@ $app->get("/news/:lang", function($lang) use($app){
         INNER JOIN `new_translation` nt ON n.id = nt.new_id
         WHERE $published nt.language_code = '". $language_code ."' " . $filter_by_year . " " . $sort . $limit . $offset;
 
+				// var_dump($query);
+				// die();
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
 		$result = $dbh->fetchAll(PDO::FETCH_OBJ);
@@ -409,8 +411,14 @@ $app->post("/new_item/delete/:id", function($id) use($app){
 		$dbh = $connection->prepare($query);
 		$dbh->execute();
 
+		$query2 = "DELETE FROM `new_translation`
+		 		WHERE `new_id` = " . $id;
+
+		$dbh = $connection->prepare($query2);
+		$dbh->execute();
+
 		// RESPONSE
-	    $response = $app->response();
+	  $response = $app->response();
 		$app->response->headers->set("Content-type", "application/json");
 		$app->response->status(200);
 		$app->response->body(json_encode(array('status' => 'ok', 'mensaje' => 'Actualizado correctamente!')));
