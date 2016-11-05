@@ -15,11 +15,9 @@ $app->get("/news/:lang", function($lang) use($app){
 		// is admin
 		$published = 1;
 		$to_admin = $params['to_admin'];
-		// var_dump($to_admin);
-		// die();
-		$published = ($to_admin == "1" ) ? '' : ' n.published = 1 AND ' ;
+		$published = ($to_admin == "1" ) ? '' : ' nt.published = 1 AND ' ;
 
-		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, n.published, nt.title, nt.excerpt  ";
+		$rows = " n.id, n.image, n.date_created, n.date as date_original, DATE_FORMAT(n.date, '%d-%m-%Y') as date, n.lastModified, n.deleted, nt.published, nt.title, nt.excerpt  ";
 
 		$sort = '';
 		$limit = '';
